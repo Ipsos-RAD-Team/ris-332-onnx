@@ -1,0 +1,6 @@
+torch
+transformers
+onnxruntime
+onnxruntime-gpu
+tf2onnx
+skl2onnx
