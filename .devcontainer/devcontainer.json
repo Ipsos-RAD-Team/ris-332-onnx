@@ -1,0 +1,67 @@
+{
+    // "image": "rad-devcontainers/python",
+    "image": "mcr.microsoft.com/vscode/devcontainers/python:3.8",
+    // "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu-18.04",
+    // "image": "sage:latest",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-from-docker:1": {},
+        // "ghcr.io/devcontainers-contrib/features/pulumi:1": {},
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+        // "ghcr.io/devcontainers/features/node:1": "none" 
+
+    },
+    "containerEnv": {
+        "AWSID": "306995253086",
+        "REGION": "us-east-2",
+        "REPO": "rise-classification/inferentia",
+        "LOCATION":"LOCAL"
+        
+    },
+    // Configure tool-specific properties.
+    "customizations": {
+        // Configure properties specific to VS Code.
+        "vscode": {
+            // Set *default* container specific settings.json values on container create.
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
+                "python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+                "python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
+                "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
+                "python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
+                "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+                "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
+                "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+                "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
+                "editor.tokenColorCustomizations": {"comments": "#d42f9d"},
+            },
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "njpwerner.autodocstring",
+                "mhutchie.git-graph",
+                "Gruntfuggly.todo-tree",
+                "ms-python.pylint",
+            ]
+        }
+    },
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [],
+
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // "postCreateCommand": "pip install requests",
+    // "postCreateCommand": "pip install -r requirements.txt",
+    "postCreateCommand": "./.devcontainer/scripts/post-create.sh",
+    
+    // Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+    "remoteUser": "vscode",
+    // The mount targets below are based upon the value of `remoteUser`
+    "mounts": [
+        "source=${env:HOME}${env:USERPROFILE}/.aws,target=/home/vscode/.aws,type=bind",
+        "source=${env:HOME}${env:USERPROFILE}/.cache,target=/home/vscode/.cache,type=bind",
+        // "source=c:/model/,target=/home/vscode/model/,type=bind"
+    ]
+}
