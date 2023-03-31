@@ -28,34 +28,6 @@ def batch_tokens(tokens: Dict[str, torch.Tensor], batch_size: int) -> Tuple[torc
         batched_tensors[key] = torch.cat(tensors, dim=0)
     return tuple(batched_tensors.values())
 
-def batch_tokens_onnx(tokens: Dict[str, torch.Tensor], batch_size: int) -> List[Dict[str, torch.Tensor]]:
-    """Splits the token tensors into batches of given batch size.
-
-    Args:
-        tokens (Dict[str, torch.Tensor]): A dictionary containing token tensors.
-        batch_size (int): The batch size to split the tensors into.
-
-    Returns:
-        List[Dict[str, torch.Tensor]]: A list of dictionaries containing batched tensor values.
-    """
-    num_samples = tokens['input_ids'].shape[0]
-    num_batches = (num_samples + batch_size - 1) // batch_size
-    batched_tokens = []
-    for i in range(num_batches):
-        start_index = i * batch_size
-        end_index = min((i + 1) * batch_size, num_samples)
-        batch_tokens = {
-            key: value[start_index:end_index] for key, value in tokens.items()
-        }
-        batched_tokens.append(batch_tokens)
-    return batched_tokens
-
-
-
-
-
-
-
 # Load the XLM-Roberta base model
 model_name = 'xlm-roberta-large'
 tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
@@ -86,27 +58,25 @@ with torch.no_grad():
         output1 = (model(*example_inputs)[0].mean(dim=1))
     stop_time = perf_counter()
     print(f"#1 Throughput for {runs} was {runs/(stop_time-start_time)}")
-    # print(output1)
-    # print(model(*example_inputs)[0].mean(dim=1))
-    # output_names = list(model(**tokens).keys())
+
+    output_names = list(model(**tokens).keys())
     
 # exit()
 onnx_file = './model/model.onnx'
-# torch.onnx.export(
-#                 model,
-#                 example_inputs,
-#                 export_params=True,
-#                 opset_version=11,
-#                 do_constant_folding=True,
-#                 input_names=input_names,
-#                 output_names=output_names,
-#                 f=onnx_file
-# )
-
-# onnx_model = onnx.load(onnx_file)
+torch.onnx.export(
+                model,
+                example_inputs,
+                export_params=True, # without the extra files the model will not load
+                opset_version=11,   # ver 11+ required for several modern op types in the model
+                do_constant_folding=True,
+                input_names=input_names,
+                output_names=output_names,
+                f=onnx_file,
+)
 
 import numpy as np
 import onnxruntime
+print('loading model')
 ort_session = onnxruntime.InferenceSession(onnx_file)
 
 start_time = perf_counter()
@@ -119,7 +89,6 @@ for i in tqdm(range(runs)):
 stop_time = perf_counter()
 print(f"#2 Throughput for {runs} was {runs/(stop_time-start_time)}")
 
-# exit()
 # Convert output tensor to PyTorch tensor
 output_tensor = torch.from_numpy(outputs[0])
 
