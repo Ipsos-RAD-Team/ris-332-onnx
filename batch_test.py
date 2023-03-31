@@ -59,10 +59,10 @@ def batch_tokens_onnx(tokens: Dict[str, torch.Tensor], batch_size: int) -> List[
 # Load the XLM-Roberta base model
 model_name = 'xlm-roberta-large'
 tokenizer = transformers.AutoTokenizer.from_pretrained(model_name)
-# model = transformers.AutoModel.from_pretrained(
-#     model_name, 
-#     # return_dict=False
-#     )
+model = transformers.AutoModel.from_pretrained(
+    model_name, 
+    # return_dict=False
+    )
 
 sentence = ["Alya told Jasmine that Andrew could pay with cash."]
 
@@ -75,20 +75,20 @@ tokens = tokenizer.batch_encode_plus(
     return_tensors="pt"
 )
 
-# input_names= list(tokens.keys())
-# print(input_names)
-# example_inputs = batch_tokens(tokens, 1)
-# model.eval()
-# runs = 30
-# with torch.no_grad():
-#     start_time = perf_counter()
-#     for i in tqdm(range(runs)):
-#         output1 = (model(*example_inputs)[0].mean(dim=1))
-#     stop_time = perf_counter()
-#     print(f"#1 Throughput for {runs} was {runs/(stop_time-start_time)}")
-#     # print(output1)
-#     # print(model(*example_inputs)[0].mean(dim=1))
-#     # output_names = list(model(**tokens).keys())
+input_names= list(tokens.keys())
+print(input_names)
+example_inputs = batch_tokens(tokens, 1)
+model.eval()
+runs = 30
+with torch.no_grad():
+    start_time = perf_counter()
+    for i in tqdm(range(runs)):
+        output1 = (model(*example_inputs)[0].mean(dim=1))
+    stop_time = perf_counter()
+    print(f"#1 Throughput for {runs} was {runs/(stop_time-start_time)}")
+    # print(output1)
+    # print(model(*example_inputs)[0].mean(dim=1))
+    # output_names = list(model(**tokens).keys())
     
 # exit()
 onnx_file = './model/model.onnx'
@@ -109,25 +109,6 @@ import numpy as np
 import onnxruntime
 ort_session = onnxruntime.InferenceSession(onnx_file)
 
-# Batch the input tokens
-batch_size = 2
-batched_tokens = batch_tokens(tokens, batch_size)
-
-# Run inference on the input batches
-outputs = []
-for batch in batched_tokens:
-    output = ort_session.run(None, batch)
-    outputs.append(output)
-
-# Concatenate the output batches
-output = [np.concatenate(outputs[i], axis=0) for i in range(len(outputs))]
-
-print(output)
-
-
-
-
-exit()
 start_time = perf_counter()
 for i in tqdm(range(runs)):
     outputs = ort_session.run(None, {
@@ -138,7 +119,7 @@ for i in tqdm(range(runs)):
 stop_time = perf_counter()
 print(f"#2 Throughput for {runs} was {runs/(stop_time-start_time)}")
 
-exit()
+# exit()
 # Convert output tensor to PyTorch tensor
 output_tensor = torch.from_numpy(outputs[0])
 
@@ -149,5 +130,5 @@ output2 = output_tensor.mean(dim=1)
 print(output2)
 
 similarity = cosine_similarity(output1, output2)
-print(similarity)
+print('Similarity is:', similarity)
 
