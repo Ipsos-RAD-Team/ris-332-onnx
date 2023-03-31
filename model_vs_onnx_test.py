@@ -96,7 +96,8 @@ output_tensor = torch.from_numpy(outputs[0])
 output2 = output_tensor.mean(dim=1)
 
 # Print the mean sentence embedding
-print(output2)
+print('Normal tensor', output1)
+print('Onnx tensor', output2)
 
 similarity = cosine_similarity(output1, output2)
 print('Similarity is:', similarity)
