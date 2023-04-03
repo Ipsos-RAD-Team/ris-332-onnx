@@ -7,7 +7,8 @@
         "ghcr.io/devcontainers/features/docker-from-docker:1": {},
         // "ghcr.io/devcontainers-contrib/features/pulumi:1": {},
         "ghcr.io/devcontainers/features/aws-cli:1": {},
-        // "ghcr.io/devcontainers/features/node:1": "none" 
+        // "ghcr.io/devcontainers/features/node:1": "none" ,
+        "ghcr.io/devcontainers/features/nvidia-cuda:1":{},	
 
     },
     "containerEnv": {
@@ -65,5 +66,8 @@
         "source=${env:HOME}${env:USERPROFILE}/.aws,target=/home/vscode/.aws,type=bind",
         "source=${env:HOME}${env:USERPROFILE}/.cache,target=/home/vscode/.cache,type=bind",
         // "source=c:/model/,target=/home/vscode/model/,type=bind"
+    ],
+    "runArgs": [
+        "--gpus", "all"
     ]
 }
