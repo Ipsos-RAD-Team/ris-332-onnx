@@ -55,7 +55,9 @@
     // "postCreateCommand": "pip install requests",
     // "postCreateCommand": "pip install -r requirements.txt",
     "postCreateCommand": "./.devcontainer/scripts/post-create.sh",
-    
+    // "devices": [
+    //     "/dev/nvidia0:/dev/nvidia0"
+    // ],
     // Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
     "remoteUser": "vscode",
     // The mount targets below are based upon the value of `remoteUser`
