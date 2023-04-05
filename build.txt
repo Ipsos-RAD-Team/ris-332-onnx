@@ -1,0 +1,9 @@
+export AWSID=306995253086
+export REGION=us-east-2
+export REPO=rise-classification/onnx
+export VERS=0.1
+export localname=ris332onnx
+
+
+aws ecr get-login-password --region $REGION | sudo docker login --username AWS --password-stdin $AWSID.dkr.ecr.$REGION.amazonaws.com
+sudo docker build --tag $localname:latest . && sudo docker tag $localname:latest $AWSID.dkr.ecr.$REGION.amazonaws.com/$REPO:$VERS && sudo docker push $AWSID.dkr.ecr.$REGION.amazonaws.com/$REPO:$VERS
